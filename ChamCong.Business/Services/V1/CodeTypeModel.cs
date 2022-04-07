@@ -59,4 +59,10 @@ namespace ChamCong.Business.Services.V1
         public DateTime TimeCheckIn { get; set; }
         public DateTime TimeCheckOut { get; set; }
     }
+    //public class APIReponsitory
+    //{
+    //    public bool Success { get; set; }
+    //    public string Message { get; set; }
+    //    public object Data { get; set; }
+    //}
 }

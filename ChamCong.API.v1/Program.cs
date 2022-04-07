@@ -20,12 +20,12 @@ namespace ChamCong.API.v1
             {
                 CreateHostBuilder(args).Build().Run();
             }
-            catch
+            catch(Exception e)
             {
                 Log.CloseAndFlush();
+                Log.Error(e,"loi");
             }
         }
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

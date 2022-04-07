@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ChamCong.Common.Utils
@@ -23,14 +24,14 @@ namespace ChamCong.Common.Utils
         }
         public HttpStatusCode Code { get; set; } = HttpStatusCode.OK;
         public string Message { get; set; } = "Success";
-        public long TotalTime { get; set; } = 0;
         public bool IsSuccess
         {
             get { return Code == HttpStatusCode.OK; }
         }
     }
-    public class Response<T>:Response
+    public class Response<T> : Response
     {
+        [JsonConstructor]
         public Response(T data)
         {
             Data = data;
@@ -51,12 +52,15 @@ namespace ChamCong.Common.Utils
         {
 
         }
+        /// <summary>
+        ///     Returned data
+        /// </summary>
         public T Data { get; set; }
     }
     //trả về một mảng data
     public class ResponseList<T> : Response
     {
-        
+
         public ResponseList(List<T> data)
         {
             Data = data;
@@ -66,7 +70,7 @@ namespace ChamCong.Common.Utils
         {
         }
 
-        
+
         public List<T> Data { get; set; }
     }
 
@@ -74,7 +78,6 @@ namespace ChamCong.Common.Utils
     //error
     public class ResponseError : Response
     {
-        
         public ResponseError(HttpStatusCode code, string message, List<Dictionary<string, string>> errorDetail = null) : base(
             code,
             message)
@@ -84,4 +87,27 @@ namespace ChamCong.Common.Utils
 
         public List<Dictionary<string, string>> ErrorDetail { get; set; }
     }
+
+
+
+    //APIReponsitory
+    public class APIReponsitory
+    {
+        public APIReponsitory() { }
+        public APIReponsitory(bool success, string message)
+        {
+            Success = success;
+            Message = message;
+        }
+        public APIReponsitory(bool success, string message,string data)
+        {
+            Success = success;
+            Message = message;
+            Data = data;
+        }
+        public Boolean Success { get; set; }
+        public string Message { get; set; }
+        public string Data { get; set; }
+    }
+    
 }

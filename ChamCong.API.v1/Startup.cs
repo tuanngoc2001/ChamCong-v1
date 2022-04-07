@@ -1,5 +1,8 @@
-
+﻿
 using ChamCong.API.Data.Data;
+using ChamCong.Business.Services.Model;
+using ChamCong.Business.Services.V1;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,10 +12,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ChamCong.API.v1
@@ -31,9 +36,28 @@ namespace ChamCong.API.v1
         {
             services.AddDbContext<ImDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("MyDb")));
             services.AddControllers();
+            services.AddSingleton<ICodeTypeHandler, CodeTypeHandler>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChamCong.API.v1", Version = "v1" });
+            }); 
+            
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            var secretKey = Configuration["AppSettings:SecretKey"];
+            var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    //tự cấp token
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+
+                    //ký vào token
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
+                    ClockSkew = TimeSpan.Zero
+                };
             });
         }
 
@@ -47,10 +71,11 @@ namespace ChamCong.API.v1
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ChamCong.API.v1 v1"));
             }
 
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
