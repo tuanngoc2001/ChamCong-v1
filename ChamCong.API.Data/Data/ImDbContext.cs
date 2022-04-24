@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using
+
 namespace ChamCong.API.Data.Data
 {
     public class ImDbContext:DbContext
